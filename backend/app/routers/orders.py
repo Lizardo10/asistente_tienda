@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from ..db import get_db
 from .. import models, schemas
@@ -42,18 +42,19 @@ def get_order(
     return order
 
 
-@router.get("", response_model=List[schemas.OrderOut])
+@router.get("", response_model=List[schemas.OrderOutWithUser])
 def list_orders(
     db: Session = Depends(get_db),
     user: models.User = Depends(get_current_user),
 ):
     """
-    Listado completo de pedidos (solo admin).
+    Listado completo de pedidos con información del usuario (solo admin).
     """
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="Solo administrador")
     return (
         db.query(models.Order)
+        .options(joinedload(models.Order.user))
         .order_by(models.Order.created_at.desc())
         .all()
     )

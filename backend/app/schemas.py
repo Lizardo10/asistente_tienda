@@ -97,12 +97,25 @@ class OrderItemOut(BaseModel):
         from_attributes = True
 
 
-# Salida de pedido (incluye items)
+# Salida de pedido (incluye items y usuario)
 class OrderOut(BaseModel):
     id: int
+    user_id: int
     status: str
-    created_at: Optional[datetime] = None  # si tu modelo no lo tiene, queda en None
+    created_at: Optional[datetime] = None
     items: List[OrderItemOut] = []
+
+    class Config:
+        from_attributes = True
+
+# Salida de pedido con información del usuario (para admin)
+class OrderOutWithUser(BaseModel):
+    id: int
+    user_id: int
+    status: str
+    created_at: Optional[datetime] = None
+    items: List[OrderItemOut] = []
+    user: Optional['UserOut'] = None
 
     class Config:
         from_attributes = True

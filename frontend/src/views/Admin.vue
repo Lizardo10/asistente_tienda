@@ -1,8 +1,31 @@
 <template>
   <div>
-    <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="d-flex align-items-center justify-content-between mb-4">
       <h3 class="mb-0">Panel de administración</h3>
-</div>
+    </div>
+
+    <!-- Tabs de navegación -->
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <button 
+          :class="['nav-link', { active: activeTab === 'products' }]" 
+          @click="activeTab = 'products'"
+        >
+          Productos
+        </button>
+      </li>
+      <li class="nav-item">
+        <button 
+          :class="['nav-link', { active: activeTab === 'orders' }]" 
+          @click="activeTab = 'orders'"
+        >
+          Historial de Compras
+        </button>
+      </li>
+    </ul>
+
+    <!-- Contenido de Productos -->
+    <div v-if="activeTab === 'products'">
 
     
     <div v-if="editing" class="card mb-4 border-primary">
@@ -65,6 +88,12 @@
       </div>
       <p v-if="products.length === 0" class="text-muted">Aún no hay productos</p>
     </div>
+    </div>
+
+    <!-- Contenido de Órdenes -->
+    <div v-if="activeTab === 'orders'">
+      <AdminOrders />
+    </div>
   </div>
 </template>
 
@@ -76,7 +105,9 @@ import { Products } from '../services/api'
 import api from '../services/api'
 const PLACEHOLDER_IMG = 'https://via.placeholder.com/600x400?text=Producto'
 import ProductForm from '../components/ProductForm.vue'
+import AdminOrders from '../components/AdminOrders.vue'
 
+const activeTab = ref('products') // 'products' o 'orders'
 
 const form = ref({ title: '', price: 0, description: '', image_url: '' })
 const products = ref([])
