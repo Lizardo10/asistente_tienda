@@ -63,6 +63,10 @@ export const Orders = {
   },
   detail(id) {
     return api.get(`/orders/${id}`)
+  },
+  // Admin: obtener todas las órdenes
+  all() {
+    return api.get('/orders')
   }
 }
 
