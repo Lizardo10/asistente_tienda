@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-3">
+    <nav class="navbar navbar-expand-lg custom-header shadow-sm px-3">
       <router-link class="navbar-brand fw-semibold" to="/">🛍️ Tienda</router-link>
 
       <button
@@ -23,7 +23,10 @@
 
           <!-- Carrito visible solo para clientes (no admin) -->
           <li class="nav-item" v-if="isLoggedIn && !session.user?.is_admin">
-            <router-link class="nav-link" to="/cart">Carrito <span class="badge bg-primary ms-1">{{ cartCount }}</span></router-link>
+            <router-link class="nav-link" to="/cart">
+              Carrito
+              <span class="badge bg-light text-primary ms-1">{{ cartCount }}</span>
+            </router-link>
           </li>
 
           <li class="nav-item" v-if="isLoggedIn && !session.user?.is_admin">
@@ -38,17 +41,17 @@
 
         <!-- No autenticado -->
         <div class="d-flex gap-2" v-if="!isLoggedIn">
-          <router-link class="btn btn-outline-primary btn-sm" to="/register">Registrarse</router-link>
-          <router-link class="btn btn-primary btn-sm" to="/login">Iniciar sesión</router-link>
+          <router-link class="btn btn-outline-light btn-sm" to="/register">Registrarse</router-link>
+          <router-link class="btn btn-outline-light btn-sm" to="/login">Iniciar sesión</router-link>
         </div>
 
         <!-- Autenticado -->
         <div class="d-flex align-items-center gap-3" v-else>
-          <small class="text-muted d-none d-md-inline">
+          <small class="text-light d-none d-md-inline">
             {{ session.user?.email }}
             <span v-if="session.user?.is_admin" class="badge bg-secondary ms-1">Admin</span>
           </small>
-          <button class="btn btn-outline-secondary btn-sm" @click="logout">Cerrar sesión</button>
+          <button class="btn btn-outline-light btn-sm" @click="logout">Cerrar sesión</button>
         </div>
       </div>
     </nav>
@@ -66,7 +69,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// cargar usuario al iniciar la app (si hay token)
+// Cargar usuario al iniciar la app
 onMounted(() => { loadMe() })
 
 const isLoggedIn = computed(() => !!session.token && !!session.user)
@@ -78,9 +81,41 @@ function logout () {
 </script>
 
 <style>
-/* Opcional: resalta link activo de la navbar */
+/* resalta link activo */
 .router-link-active.nav-link,
 .router-link-exact-active.nav-link {
   font-weight: 600;
+}
+</style>
+
+<style scoped>
+.custom-header {
+  background: linear-gradient(90deg, #007bff, #00c6ff); /* azul degradado */
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* Textos del nav */
+.navbar a,
+.navbar-brand,
+.nav-link {
+  color: #fff !important;
+}
+
+/* Botones blancos contorneados */
+.btn-outline-light {
+  border-color: #fff;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background-color: #fff;
+  color: #007bff;
+}
+
+/* badge del carrito */
+.badge.bg-light.text-primary {
+  font-size: 0.75rem;
 }
 </style>
