@@ -4,7 +4,7 @@
     <div class="row g-3">
       <div v-for="p in products" :key="p.id" class="col-12 col-sm-6 col-md-4 col-lg-3">
         <div class="card h-100 shadow-sm">
-          <img :src="resolveImage(p.image_url || (p.images?.[0]?.url ?? ''))" class="card-img-top" alt="producto">
+          <img :src="resolveImage(p.image_url || p.images?.[0]?.url)" alt="producto" class="card-img-top product-image" />
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ p.title }}</h5>
             <p class="card-text small text-muted flex-grow-1">{{ p.description }}</p>
@@ -49,3 +49,20 @@ function addToCart(p) {
 }
 onMounted(async () => { if (session.token && !session.user) await loadMe(); await load() })
 </script>
+
+
+<style scoped>
+.product-image {
+  transition: transform 0.3s ease, filter 0.3s ease;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* efecto tipo Google */
+.product-image:hover {
+  transform: scale(1.05);           /* amplía un poco la imagen */
+  filter: brightness(1.1) contrast(1.1); /* resalta colores */
+  z-index: 2;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+</style>
