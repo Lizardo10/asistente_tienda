@@ -5,9 +5,13 @@ Requiere: OPENAI_API_KEY
 import os, glob
 from pathlib import Path
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
 
 DOCS_DIR = Path(__file__).resolve().parent.parent / "docs"
 INDEX_DIR = Path(__file__).resolve().parent.parent / os.getenv("RAG_INDEX_PATH", "rag_index")

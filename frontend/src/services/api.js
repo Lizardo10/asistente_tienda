@@ -18,6 +18,9 @@ export const Products = {
   list() {
     return api.get('/products')
   },
+  listAll() {
+    return api.get('/products/all')  // Solo para administradores
+  },
   get(id) {
     return api.get(`/products/${id}`)
   },
@@ -49,10 +52,15 @@ export const Products = {
 // Auth (opcional)
 // -------------------
 export const Auth = {
-  register(payload) { return api.post('/auth/register', payload) },
-  login(payload)    { return api.post('/auth/login', payload) },
-  me()              { return api.get('/auth/me') }
+  register(payload) { return api.post('/auth-complete/register', payload) },
+  login(payload)    { return api.post('/auth-complete/login', payload) },
+  me()              { return api.get('/auth-complete/me') },
+  requestReset(email) { return api.post('/auth-complete/password-reset-request', { email }) },
+  confirmReset(token, newPassword) { return api.post('/auth-complete/password-reset-confirm', { token, new_password: newPassword }) },
+  confirmAccount(token) { return api.post('/auth-complete/confirm-email', { token }) },
+  resendConfirmation(email) { return api.post('/auth-complete/resend-confirmation', { email }) }
 }
+
 
 export const Orders = {
   create(payload) {
@@ -67,6 +75,53 @@ export const Orders = {
   // Admin: obtener todas las órdenes
   all() {
     return api.get('/orders')
+  }
+}
+
+// -------------------
+// Accounting (Solo Admin)
+// -------------------
+export const Accounting = {
+  // Dashboard
+  getDashboardStats() {
+    return api.get('/admin/accounting/dashboard')
+  },
+  
+  // Inventario
+  getStockLevels() {
+    return api.get('/admin/accounting/inventory/stock-levels')
+  },
+  
+  getLowStockProducts() {
+    return api.get('/admin/accounting/inventory/low-stock')
+  },
+  
+  adjustStock(payload) {
+    return api.post('/admin/accounting/inventory/adjust-stock', payload)
+  },
+  
+  createInventoryTransaction(payload) {
+    return api.post('/admin/accounting/inventory/transaction', payload)
+  },
+  
+  // Reportes
+  generateFinancialReport(reportType, periodStart, periodEnd) {
+    return api.post('/admin/accounting/reports/generate', {
+      report_type: reportType,
+      period_start: periodStart,
+      period_end: periodEnd
+    })
+  },
+  
+  getFinancialReports() {
+    return api.get('/admin/accounting/reports')
+  },
+  
+  // Utilidades
+  initializeProductStock(productId, initialStock = 0) {
+    return api.post(`/admin/accounting/inventory/initialize/${productId}`, {
+      initial_stock: initialStock
+    })
   }
 }
 

@@ -4,26 +4,40 @@ from sqlalchemy.orm import Session
 from typing import List
 from uuid import uuid4
 import os
-from ..db import get_db
-from .. import models, schemas
+from ..database.connection import get_db
+from .. import schemas
+from ..models_sqlmodel.product import Product, ProductImage
+from ..models_sqlmodel.user import User
 from ..security import get_current_admin  # 👈 protege con JWT + rol admin
+from app.services.intelligent_cache_service import intelligent_cache
 
 router = APIRouter(prefix="/products", tags=["products"])
 
 @router.get("", response_model=List[schemas.ProductOut])
-def list_products(db: Session = Depends(get_db)):
-    return db.query(models.Product).filter(models.Product.active == True).all()
+async def list_products(db: Session = Depends(get_db)):
+    """Listar productos (CON CACHÉ INTELIGENTE)"""
+    # Usar caché inteligente en lugar de consulta directa
+    products_data = await intelligent_cache.get_all_products(db, active_only=True)
+    return products_data
+
+@router.get("/all", response_model=List[schemas.ProductOut])
+def list_all_products(db: Session = Depends(get_db), admin: User = Depends(get_current_admin)):
+    """
+    Lista todos los productos (activos e inactivos) - Solo para administradores.
+    Útil para el historial de compras donde pueden aparecer productos desactivados.
+    """
+    return db.query(Product).all()
 
 @router.get("/{product_id}", response_model=schemas.ProductOut)
 def get_product(product_id: int, db: Session = Depends(get_db)):
-    p = db.query(models.Product).get(product_id)
+    p = db.query(Product).get(product_id)
     if not p:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return p
 
 @router.post("", response_model=schemas.ProductOut, status_code=201, dependencies=[Depends(get_current_admin)])
 def create_product(data: schemas.ProductCreate, db: Session = Depends(get_db)):
-    p = models.Product(
+    p = Product(
         title=data.title,
         description=data.description,
         price=data.price,
@@ -37,7 +51,7 @@ def create_product(data: schemas.ProductCreate, db: Session = Depends(get_db)):
 
 @router.put("/{product_id}", response_model=schemas.ProductOut, dependencies=[Depends(get_current_admin)])
 def update_product(product_id: int, data: schemas.ProductUpdate, db: Session = Depends(get_db)):
-    p = db.query(models.Product).get(product_id)
+    p = db.query(Product).get(product_id)
     if not p:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     if data.title is not None: p.title = data.title
@@ -51,7 +65,7 @@ def update_product(product_id: int, data: schemas.ProductUpdate, db: Session = D
 
 @router.delete("/{product_id}", status_code=204, dependencies=[Depends(get_current_admin)])
 def delete_product(product_id: int, db: Session = Depends(get_db)):
-    p = db.query(models.Product).get(product_id)
+    p = db.query(Product).get(product_id)
     if not p:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     db.delete(p)
@@ -64,14 +78,14 @@ def _media_base_url():
 
 @router.get("/{product_id}/images", response_model=List[schemas.ProductImageOut])
 def list_images(product_id: int, db: Session = Depends(get_db)):
-    p = db.query(models.Product).get(product_id)
+    p = db.query(Product).get(product_id)
     if not p:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return p.images
 
 @router.post("/{product_id}/images", response_model=schemas.ProductImageOut, status_code=201, dependencies=[Depends(get_current_admin)])
 async def upload_image(product_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
-    p = db.query(models.Product).get(product_id)
+    p = db.query(Product).get(product_id)
     if not p:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
@@ -89,7 +103,7 @@ async def upload_image(product_id: int, file: UploadFile = File(...), db: Sessio
         f.write(content)
 
     url = f"{_media_base_url()}/{name}"
-    img = models.ProductImage(product_id=p.id, url=url)
+    img = ProductImage(product_id=p.id, url=url)
     db.add(img)
     db.commit()
     db.refresh(img)
@@ -97,7 +111,7 @@ async def upload_image(product_id: int, file: UploadFile = File(...), db: Sessio
 
 @router.delete("/{product_id}/images/{image_id}", status_code=204, dependencies=[Depends(get_current_admin)])
 def delete_image(product_id: int, image_id: int, db: Session = Depends(get_db)):
-    img = db.query(models.ProductImage).get(image_id)
+    img = db.query(ProductImage).get(image_id)
     if not img or img.product_id != product_id:
         raise HTTPException(status_code=404, detail="Imagen no encontrada")
     media_dir = os.getenv("MEDIA_DIR", "media")

@@ -11,9 +11,20 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), default="")
-    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    role: Mapped[str] = mapped_column(String(50), default="user")  # "user" | "admin"
+    balance: Mapped[float] = mapped_column(Float, default=0.0)  # Balance del usuario
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    last_login: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    mfa_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    mfa_secret: Mapped[str] = mapped_column(String(255), nullable=True)
+    email_confirmation_token: Mapped[str] = mapped_column(String(255), nullable=True)
+    password_reset_token: Mapped[str] = mapped_column(String(255), nullable=True)
+    password_reset_expires: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 # -------------------
@@ -49,6 +60,12 @@ class Order(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     status: Mapped[str] = mapped_column(String(50), default="pending")
+    total_amount: Mapped[float] = mapped_column(Float, default=0.0)
+    payment_method: Mapped[str] = mapped_column(String(50), nullable=True)
+    payment_status: Mapped[str] = mapped_column(String(50), default="pending")
+    payment_id: Mapped[str] = mapped_column(String(100), nullable=True)
+    payer_id: Mapped[str] = mapped_column(String(100), nullable=True)
+    completed_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     user = relationship("User")
     items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
@@ -83,4 +100,5 @@ class ChatMessage(Base):
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"), nullable=False)
     sender: Mapped[str] = mapped_column(String(50))  # "user" | "bot" | "agent"
     content: Mapped[str] = mapped_column(Text)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

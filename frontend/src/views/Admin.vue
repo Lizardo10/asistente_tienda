@@ -1,235 +1,359 @@
 <template>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex items-center justify-between">
   <div>
-    <div class="d-flex align-items-center justify-content-between mb-4">
-      <h3 class="mb-0">Panel de administración</h3>
+            <h1 class="text-3xl font-bold text-gray-900">Panel de Administración</h1>
+            <p class="mt-2 text-gray-600">Gestiona tu tienda desde aquí</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="text-right">
+              <p class="text-sm text-gray-600">Bienvenido</p>
+              <p class="font-medium text-gray-900">{{ userEmail }}</p>
+            </div>
+            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+              <i class="fas fa-user text-white"></i>
+            </div>
+          </div>
     </div>
-
-    <!-- Tabs de navegación -->
-    <ul class="nav nav-tabs mb-4">
-      <li class="nav-item">
-        <button 
-          :class="['nav-link', { active: activeTab === 'products' }]" 
-          @click="activeTab = 'products'"
-        >
-          Productos
-        </button>
-      </li>
-      <li class="nav-item">
-        <button 
-          :class="['nav-link', { active: activeTab === 'orders' }]" 
-          @click="activeTab = 'orders'"
-        >
-          Historial de Compras
-        </button>
-      </li>
-    </ul>
-
-    <!-- Contenido de Productos -->
-    <div v-if="activeTab === 'products'">
-
-    
-    <div v-if="editing" class="card mb-4 border-primary">
-      <div class="card-body">
-        <h5 class="card-title mb-3">Editar producto</h5>
-        <ProductForm :value="editModel" mode="edit" @submit="updateProduct" @cancel="cancelEdit" />
       </div>
     </div>
 
-    <div class="card mb-4">
-      <div class="card-body">
-        <h5 class="card-title mb-3">Crear producto</h5>
-        <form @submit.prevent="createProduct" class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">Título</label>
-            <input v-model.trim="form.title" class="form-control" required />
+    <!-- Estadísticas principales -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center">
+            <div class="p-3 bg-blue-100 rounded-lg">
+              <i class="fas fa-box text-blue-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Total Productos</p>
+              <p class="text-2xl font-bold text-gray-900">{{ stats.totalProducts }}</p>
+            </div>
           </div>
-          <div class="col-md-3">
-            <label class="form-label">Precio</label>
-            <input v-model.number="form.price" type="number" min="0" step="0.01" class="form-control" required />
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center">
+            <div class="p-3 bg-green-100 rounded-lg">
+              <i class="fas fa-shopping-bag text-green-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Pedidos Hoy</p>
+              <p class="text-2xl font-bold text-gray-900">{{ stats.ordersToday }}</p>
+            </div>
           </div>
-          <div class="col-md-12">
-            <label class="form-label">Descripción</label>
-            <textarea v-model.trim="form.description" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center">
+            <div class="p-3 bg-yellow-100 rounded-lg">
+              <i class="fas fa-dollar-sign text-yellow-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Ingresos Hoy</p>
+              <p class="text-2xl font-bold text-gray-900">Q{{ stats.revenueToday.toFixed(2) }}</p>
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Imagen principal (URL opcional)</label>
-            <input v-model.trim="form.image_url" class="form-control" placeholder="http://..." />
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center">
+            <div class="p-3 bg-purple-100 rounded-lg">
+              <i class="fas fa-users text-purple-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Clientes Activos</p>
+              <p class="text-2xl font-bold text-gray-900">{{ stats.activeUsers }}</p>
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Subir imagen (archivo)</label>
-            <input ref="fileRef" type="file" accept="image/*" class="form-control" />
+        </div>
+      </div>
+
+      <!-- Acciones rápidas -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <router-link 
+            to="/admin/products" 
+            class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+          >
+            <i class="fas fa-box text-blue-600 text-xl mr-3"></i>
+            <div>
+              <p class="font-medium text-gray-900">Gestionar Productos</p>
+              <p class="text-sm text-gray-600">Agregar, editar, eliminar</p>
+            </div>
+          </router-link>
+          
+          <router-link 
+            to="/admin/orders" 
+            class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200"
+          >
+            <i class="fas fa-shopping-bag text-green-600 text-xl mr-3"></i>
+            <div>
+              <p class="font-medium text-gray-900">Gestionar Pedidos</p>
+              <p class="text-sm text-gray-600">Ver y actualizar estados</p>
+            </div>
+          </router-link>
+          
+          <router-link 
+            to="/admin/accounting" 
+            class="flex items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors duration-200"
+          >
+            <i class="fas fa-calculator text-yellow-600 text-xl mr-3"></i>
+            <div>
+              <p class="font-medium text-gray-900">Contabilidad</p>
+              <p class="text-sm text-gray-600">Reportes financieros</p>
+            </div>
+          </router-link>
+          
+          <router-link 
+            to="/admin/financial" 
+            class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200"
+          >
+            <i class="fas fa-chart-line text-green-600 text-xl mr-3"></i>
+            <div>
+              <p class="font-medium text-gray-900">Panel Financiero</p>
+              <p class="text-sm text-gray-600">Transacciones e ingresos</p>
+            </div>
+          </router-link>
+          
+          <router-link 
+            to="/admin/chat-history" 
+            class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200"
+          >
+            <i class="fas fa-comments text-purple-600 text-xl mr-3"></i>
+            <div>
+              <p class="font-medium text-gray-900">Historial de Chat</p>
+              <p class="text-sm text-gray-600">Conversaciones con IA</p>
           </div>
-          <div class="col-12">
-            <button class="btn btn-primary" :disabled="loading">Guardar</button>
+          </router-link>
           </div>
-          <div class="text-danger" v-if="error">{{ error }}</div>
-          <div class="text-success" v-if="ok">¡Producto creado!</div>
-        </form>
+      </div>
+
+      <!-- Gráficos y análisis -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Productos más vendidos -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Productos Más Vendidos</h3>
+          <div class="space-y-4">
+            <div v-for="product in topProducts" :key="product.id" class="flex items-center justify-between">
+              <div class="flex items-center">
+                <img 
+                  :src="resolveImage(product.image_url)" 
+                  :alt="product.title"
+                  class="w-10 h-10 rounded-lg object-cover mr-3"
+                >
+                <div>
+                  <p class="font-medium text-gray-900">{{ product.title }}</p>
+                  <p class="text-sm text-gray-600">{{ product.sales }} ventas</p>
+                </div>
+              </div>
+              <span class="text-sm font-medium text-gray-900">Q{{ product.price.toFixed(2) }}</span>
+            </div>
       </div>
     </div>
 
-    <h5 class="mb-2">Productos</h5>
-    <div class="row g-3">
-      <div v-for="p in products" :key="p.id" class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="card h-100 shadow-sm">
-          <img :src="resolveImage(p.image_url || (p.images?.[0]?.url ?? ''))" class="card-img-top" alt="producto">
-          <div class="card-body d-flex flex-column">
-            <h6 class="card-title">{{ p.title }}</h6>
-            <p class="card-text small text-muted flex-grow-1">{{ p.description }}</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-semibold">Q {{ p.price.toFixed(2) }}</span>
-              <div class="btn-group btn-group-sm">
-                <button class="btn btn-outline-primary" @click="startEdit(p)">Editar</button>
-                <button class="btn btn-outline-danger" @click="remove(p.id)" :disabled="loading">Eliminar</button>
+        <!-- Pedidos recientes -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Pedidos Recientes</h3>
+          <div class="space-y-4">
+            <div v-for="order in recentOrders" :key="order.id" class="flex items-center justify-between">
+              <div>
+                <p class="font-medium text-gray-900">Pedido #{{ order.id }}</p>
+                <p class="text-sm text-gray-600">{{ order.customer_email }}</p>
+              </div>
+              <div class="text-right">
+                <p class="font-medium text-gray-900">Q{{ order.total_amount.toFixed(2) }}</p>
+                <span 
+                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                  :class="getStatusClass(order.status)"
+                >
+                  {{ getStatusText(order.status) }}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <p v-if="products.length === 0" class="text-muted">Aún no hay productos</p>
-    </div>
-    </div>
 
-    <!-- Contenido de Órdenes -->
-    <div v-if="activeTab === 'orders'">
-      <AdminOrders />
+      <!-- Actividad reciente -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Actividad Reciente</h3>
+        <div class="space-y-4">
+          <div v-for="activity in recentActivity" :key="activity.id" class="flex items-center">
+            <div class="flex-shrink-0">
+              <div 
+                class="w-8 h-8 rounded-full flex items-center justify-center"
+                :class="getActivityClass(activity.type)"
+              >
+                <i :class="getActivityIcon(activity.type)" class="text-white text-sm"></i>
+              </div>
+            </div>
+            <div class="ml-4 flex-1">
+              <p class="text-sm text-gray-900">{{ activity.description }}</p>
+              <p class="text-xs text-gray-500">{{ formatTime(activity.created_at) }}</p>
+            </div>
+          </div>
+    </div>
+    </div>
     </div>
   </div>
 </template>
 
 <script setup>
-
-import { ref, onMounted } from 'vue'
-import DOMPurify from 'dompurify'
-import { Products } from '../services/api'
+import { ref, computed, onMounted } from 'vue'
+import { session } from '../services/session'
 import api from '../services/api'
-const PLACEHOLDER_IMG = 'https://via.placeholder.com/600x400?text=Producto'
-import ProductForm from '../components/ProductForm.vue'
-import AdminOrders from '../components/AdminOrders.vue'
 
-const activeTab = ref('products') // 'products' o 'orders'
+// Estado reactivo
+const stats = ref({
+  totalProducts: 0,
+  ordersToday: 0,
+  revenueToday: 0,
+  activeUsers: 0
+})
 
-const form = ref({ title: '', price: 0, description: '', image_url: '' })
-const products = ref([])
-const loading = ref(false)
-const error = ref('')
-const ok = ref(false)
-const fileRef = ref(null)
-function resolveImage(u) {
-  if (!u) return PLACEHOLDER_IMG
-  if (!/^https?:\/\//i.test(u)) {
-    const base = (api?.defaults?.baseURL || '').replace(/\/$/, '')
-    return base + u
-  }
-  return u
-}
+const topProducts = ref([])
+const recentOrders = ref([])
+const recentActivity = ref([])
 
+// Computed properties
+const userEmail = computed(() => session.user?.email || 'Administrador')
 
-const editing = ref(false)
-const editModel = ref(null)
-
-function startEdit(p) {
-  // clonar datos mínimos
-  editModel.value = {
-    id: p.id,
-    title: p.title ?? '',
-    price: Number(p.price ?? 0),
-    description: p.description ?? '',
-    image_url: p.image_url ?? (p.images?.[0]?.url ?? ''),
-    active: typeof p.active === 'boolean' ? p.active : true
-  }
-  editing.value = true
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-function cancelEdit() {
-  editing.value = false
-  editModel.value = null
-}
-
-async function updateProduct(payload) {
-  if (!editModel.value?.id) return
-  loading.value = true
+// Métodos
+async function loadStats() {
   try {
-    const sanitized = {
-      title: sanitize(payload.title),
-      description: sanitize(payload.description),
-      price: Number(payload.price),
-      image_url: sanitize(payload.image_url),
-      active: payload.active
-    }
-    await api.put(`/products/${editModel.value.id}`, sanitized)
-    await load()
-    ok.value = true
-    setTimeout(() => ok.value = false, 2000)
-    cancelEdit()
-  } catch (e) {
-    alert(e?.response?.data?.detail || 'Error actualizando')
-  } finally {
-    loading.value = false
+    // Cargar productos
+    const productsResponse = await api.get('/products')
+    stats.value.totalProducts = productsResponse.data.length
+
+    // Cargar pedidos
+    const ordersResponse = await api.get('/orders/admin')
+    const today = new Date().toDateString()
+    const todayOrders = ordersResponse.data.filter(order => 
+      new Date(order.created_at).toDateString() === today
+    )
+    
+    stats.value.ordersToday = todayOrders.length
+    stats.value.revenueToday = todayOrders.reduce((total, order) => total + order.total_amount, 0)
+    
+    // Simular usuarios activos (en una app real vendría del backend)
+    stats.value.activeUsers = Math.floor(Math.random() * 50) + 20
+
+    // Productos más vendidos (simulado)
+    topProducts.value = productsResponse.data.slice(0, 5).map(product => ({
+      ...product,
+      sales: Math.floor(Math.random() * 100) + 10
+    }))
+
+    // Pedidos recientes
+    recentOrders.value = ordersResponse.data.slice(0, 5)
+
+    // Actividad reciente (simulada)
+    recentActivity.value = [
+      {
+        id: 1,
+        type: 'order',
+        description: 'Nuevo pedido #1234 por Q250.00',
+        created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString()
+      },
+      {
+        id: 2,
+        type: 'product',
+        description: 'Producto "Camisa Azul" actualizado',
+        created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString()
+      },
+      {
+        id: 3,
+        type: 'user',
+        description: 'Nuevo usuario registrado',
+        created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString()
+      }
+    ]
+
+  } catch (error) {
+    console.error('Error cargando estadísticas:', error)
   }
 }
 
-
-function sanitize(s){ return DOMPurify.sanitize(s ?? '') }
-
-async function load() {
-  const { data } = await Products.list()
-  products.value = data
-}
-
-function logout() {
-  localStorage.removeItem('token')
-  location.href = '/login'
-}
-
-async function createProduct() {
-  error.value = ''; ok.value = false
-  if (!form.value.title || !form.value.price) {
-    error.value = 'Completa título y precio'
-    return
+function resolveImage(imageUrl) {
+  if (!imageUrl) {
+    return 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop'
   }
-  loading.value = true
-  try {
-    // 1) crear producto
-    const payload = {
-      title: sanitize(form.value.title),
-      description: sanitize(form.value.description),
-      price: Number(form.value.price),
-      image_url: sanitize(form.value.image_url),
-    }
-    const { data: prod } = await Products.create(payload)
-
-    // 2) si hay archivo, subirlo
-    const file = fileRef.value?.files?.[0]
-    if (file) {
-      await Products.uploadImage(prod.id, file)
-    }
-
-    // 3) limpiar y recargar
-    form.value = { title: '', price: 0, description: '', image_url: '' }
-    if (fileRef.value) fileRef.value.value = ''
-    ok.value = true
-    await load()
-  } catch (e) {
-    error.value = e?.response?.data?.detail || 'Error creando producto'
-  } finally {
-    loading.value = false
+  if (imageUrl.startsWith('http')) {
+    return imageUrl
   }
+  return `http://localhost:8000${imageUrl}`
 }
 
-async function remove(id) {
-  if (!confirm('¿Eliminar producto?')) return
-  loading.value = true
-  try {
-    await Products.remove(id)
-    await load()
-  } catch (e) {
-    alert(e?.response?.data?.detail || 'Error eliminando')
-  } finally {
-    loading.value = false
+function getStatusClass(status) {
+  const classes = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    processing: 'bg-blue-100 text-blue-800',
+    shipped: 'bg-purple-100 text-purple-800',
+    delivered: 'bg-green-100 text-green-800',
+    cancelled: 'bg-red-100 text-red-800'
   }
+  return classes[status] || 'bg-gray-100 text-gray-800'
 }
 
-onMounted(load)
+function getStatusText(status) {
+  const texts = {
+    pending: 'Pendiente',
+    processing: 'Procesando',
+    shipped: 'Enviado',
+    delivered: 'Entregado',
+    cancelled: 'Cancelado'
+  }
+  return texts[status] || status
+}
+
+function getActivityClass(type) {
+  const classes = {
+    order: 'bg-green-500',
+    product: 'bg-blue-500',
+    user: 'bg-purple-500'
+  }
+  return classes[type] || 'bg-gray-500'
+}
+
+function getActivityIcon(type) {
+  const icons = {
+    order: 'fas fa-shopping-bag',
+    product: 'fas fa-box',
+    user: 'fas fa-user'
+  }
+  return icons[type] || 'fas fa-circle'
+}
+
+function formatTime(dateString) {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diff = now - date
+  
+  if (diff < 60000) return 'Hace un momento'
+  if (diff < 3600000) return `Hace ${Math.floor(diff / 60000)} minutos`
+  if (diff < 86400000) return `Hace ${Math.floor(diff / 3600000)} horas`
+  return date.toLocaleDateString('es-GT')
+}
+
+// Cargar datos al montar
+onMounted(() => {
+  loadStats()
+})
 </script>
+
+<style scoped>
+/* Animaciones suaves */
+.transition-shadow {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.transition-colors {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+</style>

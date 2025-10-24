@@ -10,3 +10,33 @@ ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 
 # Media
 MEDIA_DIR=media
+
+# OpenAI API Key (necesaria para el chat con IA)
+OPENAI_API_KEY=
+
+# Hugging Face API Key (para análisis de imágenes)
+HUGGINGFACE_API_KEY=
+HUGGINGFACE_API_URL=https://api-inference.huggingface.co
+
+# RAG Index Path
+RAG_INDEX_PATH=rag_index
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# PayPal Configuration
+PAYPAL_CLIENT_ID=tu_paypal_client_id_aqui
+PAYPAL_CLIENT_SECRET=tu_paypal_client_secret_aqui
+PAYPAL_MODE=sandbox
+PAYPAL_BASE_URL=https://api.sandbox.paypal.com
+PAYPAL_RETURN_URL=http://localhost:5173/checkout/success
+PAYPAL_CANCEL_URL=http://localhost:5173/checkout/cancel
+
+# Email Configuration
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+EMAIL_USER=tu_email@gmail.com
+EMAIL_PASSWORD=tu_app_password
+FROM_EMAIL=tu_email@gmail.com
+APP_NAME=Tu Tienda Online
+FRONTEND_URL=http://localhost:5173

@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Define lo que necesitas sí o sí:
-    DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres@localhost:5432/tienda_asistente"
+    DATABASE_URL: str = "sqlite:///./tienda.db"
 
     # Permite variables extra del .env (JWT_SECRET, etc) sin que falle
     model_config = SettingsConfigDict(

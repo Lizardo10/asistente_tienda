@@ -43,7 +43,7 @@
       <div class="card mb-3">
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-8">
               <input 
                 v-model="searchQuery" 
                 type="text" 
@@ -51,15 +51,7 @@
                 placeholder="Buscar por email o nombre..."
               />
             </div>
-            <div class="col-md-3">
-              <select v-model="filterStatus" class="form-select">
-                <option value="">Todos los estados</option>
-                <option value="pending">Pendiente</option>
-                <option value="completed">Completado</option>
-                <option value="cancelled">Cancelado</option>
-              </select>
-            </div>
-            <div class="col-md-5 text-end">
+            <div class="col-md-4 text-end">
               <span class="text-muted">{{ filteredOrders.length }} órdenes mostradas</span>
             </div>
           </div>
@@ -77,7 +69,6 @@
               <th>Fecha</th>
               <th>Items</th>
               <th>Total</th>
-              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -92,11 +83,6 @@
               <td class="text-center">{{ order.items.length }}</td>
               <td>
                 <strong>Q {{ calculateTotal(order.items).toFixed(2) }}</strong>
-              </td>
-              <td>
-                <span :class="getStatusBadgeClass(order.status)">
-                  {{ getStatusLabel(order.status) }}
-                </span>
               </td>
               <td>
                 <button 
@@ -132,12 +118,6 @@
                   </div>
                   <div class="col-md-6">
                     <p class="mb-1"><strong>Fecha:</strong> {{ formatDate(selectedOrder.created_at) }}</p>
-                    <p class="mb-1">
-                      <strong>Estado:</strong> 
-                      <span :class="getStatusBadgeClass(selectedOrder.status)">
-                        {{ getStatusLabel(selectedOrder.status) }}
-                      </span>
-                    </p>
                   </div>
                 </div>
               </div>
@@ -195,7 +175,6 @@ const products = ref([])
 const loading = ref(true)
 const selectedOrder = ref(null)
 const searchQuery = ref('')
-const filterStatus = ref('')
 
 const PLACEHOLDER_IMG = 'https://via.placeholder.com/600x400?text=Producto'
 
@@ -230,11 +209,6 @@ const filteredOrders = computed(() => {
     )
   }
 
-  // Filtrar por estado
-  if (filterStatus.value) {
-    result = result.filter(order => order.status === filterStatus.value)
-  }
-
   return result
 })
 
@@ -256,24 +230,6 @@ function formatDate(iso) {
   } catch {
     return iso || ''
   }
-}
-
-function getStatusLabel(status) {
-  const labels = {
-    pending: 'Pendiente',
-    completed: 'Completado',
-    cancelled: 'Cancelado'
-  }
-  return labels[status] || status
-}
-
-function getStatusBadgeClass(status) {
-  const classes = {
-    pending: 'badge bg-warning text-dark',
-    completed: 'badge bg-success',
-    cancelled: 'badge bg-danger'
-  }
-  return classes[status] || 'badge bg-secondary'
 }
 
 function getProductById(id) {
@@ -300,8 +256,8 @@ function closeDetails() {
 async function loadOrders() {
   loading.value = true
   try {
-    // Cargar productos para mostrar info
-    const { data: prods } = await Products.list()
+    // Cargar TODOS los productos (activos e inactivos) para mostrar info completa
+    const { data: prods } = await Products.listAll()
     products.value = Array.isArray(prods) ? prods : []
 
     // Cargar todas las órdenes (admin)

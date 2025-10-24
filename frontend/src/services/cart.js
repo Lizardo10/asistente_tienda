@@ -29,6 +29,13 @@ export function clear() {
   cart.items.splice(0, cart.items.length)
 }
 
+export function updateQuantity(id, newQuantity) {
+  const item = cart.items.find(it => it.id === id)
+  if (item) {
+    item.quantity = Math.max(1, newQuantity)
+  }
+}
+
 export function toOrderPayload () {
   return {
     items: cart.items.map(it => ({

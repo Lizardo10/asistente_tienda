@@ -34,6 +34,7 @@ class PasswordResetConfirm(BaseModel):
     new_password: str
 
 
+
 # -------------------
 # Products
 # -------------------
@@ -127,6 +128,11 @@ class ChatMessageIn(BaseModel):
     chat_id: int
     content: str
 
+class ChatAdvancedMessageIn(BaseModel):
+    """Schema para el endpoint advanced-message que acepta 'message' en lugar de 'content'"""
+    chat_id: int
+    message: str
+
 class ChatMessageOut(BaseModel):
     id: int
     chat_id: int
@@ -139,5 +145,6 @@ class UserOut(BaseModel):
     email: EmailStr
     full_name: str | None = ""
     is_admin: bool
+    balance: float = 0.0
     class Config:
         from_attributes = True

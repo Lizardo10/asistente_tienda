@@ -11,7 +11,11 @@ export async function loadMe() {
   try {
     const { data } = await Auth.me()
     session.user = data
-  } catch {
+  } catch (error) {
+    // Si hay error 401, limpiar el token inválido
+    if (error.response?.status === 401) {
+      setToken(null)
+    }
     session.user = null
   }
 }

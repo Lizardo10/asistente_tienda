@@ -34,7 +34,7 @@ const loading1 = ref(false); const loading2 = ref(false)
 const error = ref(''); const ok = ref(false)
 async function requestT(){
   error.value=''; ok.value=false; loading1.value=true
-  try{ const { data } = await Auth.requestReset(email.value); token.value = data.reset_token || '' }
+  try{ const { data } = await Auth.requestReset(email.value); token.value = data.token || '' }
   catch(e){ error.value = e?.response?.data?.detail || 'Error solicitando token' }
   finally{ loading1.value=false }
 }
