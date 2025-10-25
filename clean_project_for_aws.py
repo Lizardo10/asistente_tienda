@@ -174,3 +174,12 @@ if __name__ == "__main__":
     print(f"Total archivos eliminados: {total_deleted}")
     print("Proyecto listo para AWS EC2")
     print("Estructura limpia y optimizada")
+
+
+
+
+
+
+
+
+

@@ -237,7 +237,7 @@ onMounted(() => {
 }
 
 .chat-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff8c00 0%, #32cd32 100%);
   color: white;
   padding: 1rem;
   display: flex;

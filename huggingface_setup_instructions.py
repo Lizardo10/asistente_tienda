@@ -22,3 +22,12 @@ print()
 print("Una vez configurado, el análisis de imágenes funcionará correctamente")
 print("y podrás obtener descripciones reales de las imágenes en lugar de")
 print("análisis básicos.")
+
+
+
+
+
+
+
+
+

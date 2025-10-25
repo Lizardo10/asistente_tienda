@@ -209,3 +209,12 @@ async def get_financial_summary(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error obteniendo resumen: {str(e)}")
+
+
+
+
+
+
+
+
+

@@ -13,7 +13,7 @@
               <p class="text-sm text-gray-600">Bienvenido</p>
               <p class="font-medium text-gray-900">{{ userEmail }}</p>
             </div>
-            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+            <div class="w-10 h-10 bg-gradient-to-r from-orange-500 to-green-500 rounded-full flex items-center justify-center">
               <i class="fas fa-user text-white"></i>
             </div>
           </div>

@@ -1,0 +1,72 @@
+# Configuración mejorada para el chat con OpenAI, audio e imágenes
+# Copia este archivo como .env en la carpeta backend/
+
+# ==================== BASE DE DATOS ====================
+DATABASE_URL=sqlite:///./tienda.db
+
+# ==================== JWT ====================
+JWT_SECRET=tu_jwt_secret_super_seguro_para_desarrollo_cambiar_en_produccion
+JWT_EXPIRE_MINUTES=120
+
+# ==================== CORS ====================
+ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
+
+# ==================== MEDIA ====================
+MEDIA_DIR=media
+
+# ==================== OPENAI API KEY ====================
+# IMPORTANTE: Configura tu API key de OpenAI para que funcione el chat inteligente
+OPENAI_API_KEY=tu_openai_api_key_aqui
+
+# ==================== HUGGING FACE API KEY ====================
+# Para análisis de imágenes (opcional)
+HUGGINGFACE_API_KEY=tu_huggingface_api_key_aqui
+HUGGINGFACE_API_URL=https://api-inference.huggingface.co
+
+# ==================== RAG ====================
+RAG_INDEX_PATH=rag_index
+
+# ==================== REDIS ====================
+# Para caché (opcional para desarrollo)
+REDIS_URL=redis://localhost:6379
+
+# ==================== PAYPAL ====================
+# Para pagos (opcional)
+PAYPAL_CLIENT_ID=tu_paypal_client_id_aqui
+PAYPAL_CLIENT_SECRET=tu_paypal_client_secret_aqui
+PAYPAL_MODE=sandbox
+PAYPAL_BASE_URL=https://api.sandbox.paypal.com
+PAYPAL_RETURN_URL=http://localhost:5173/checkout/success
+PAYPAL_CANCEL_URL=http://localhost:5173/checkout/cancel
+
+# ==================== EMAIL ====================
+# Para notificaciones (opcional)
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+EMAIL_USER=tu_email@gmail.com
+EMAIL_PASSWORD=tu_app_password
+FROM_EMAIL=tu_email@gmail.com
+APP_NAME=Asistente Tienda
+FRONTEND_URL=http://localhost:5173
+
+# ==================== BREVO/SENDINBLUE ====================
+# Para emails (opcional)
+BREVO_API_KEY=tu_brevo_api_key_aqui
+
+# ==================== CELERY ====================
+# Para tareas en background (opcional)
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
+
+# ==================== ENVIRONMENT ====================
+ENVIRONMENT=development
+DEBUG=true
+
+# ==================== INSTRUCCIONES ====================
+# 1. Copia este archivo como .env en backend/
+# 2. Configura tu OPENAI_API_KEY para que funcione el chat inteligente
+# 3. Opcional: Configura HUGGINGFACE_API_KEY para análisis de imágenes
+# 4. Opcional: Configura las otras APIs según necesites
+# 5. Reinicia el servidor backend después de configurar
+
+

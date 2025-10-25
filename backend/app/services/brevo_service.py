@@ -151,12 +151,6 @@ class BrevoEmailService:
             logger.info(f"Email enviado exitosamente a {to_email} - Message ID: {api_response.message_id}")
             return True
             
-        except ApiException as e:
-            logger.error(f"Error de API enviando email a {to_email}: {e}")
-            # Si falla la API, activar modo simulación para futuros emails
-            self.simulation_mode = True
-            logger.warning("⚠️ Activando modo simulación debido a error de API")
-            return True  # Retornar True para que el registro continúe
         except Exception as e:
             logger.error(f"Error enviando email a {to_email}: {str(e)}")
             # Si hay cualquier error, activar modo simulación

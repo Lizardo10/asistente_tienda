@@ -7,10 +7,10 @@
           <!-- Logo -->
           <div class="flex-shrink-0">
             <router-link to="/" class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <div class="w-8 h-8 bg-gradient-to-r from-orange-500 to-green-500 rounded-lg flex items-center justify-center">
                 <i class="fas fa-store text-white text-sm"></i>
               </div>
-              <span class="text-xl font-bold text-gray-900">TiendaPro</span>
+              <span class="text-xl font-bold text-gray-900">Asistente Tienda</span>
             </router-link>
           </div>
 

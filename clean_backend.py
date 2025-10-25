@@ -122,3 +122,12 @@ if __name__ == "__main__":
     print("=" * 40)
     print(f"Archivos eliminados: {deleted}")
     print("Backend optimizado para AWS EC2")
+
+
+
+
+
+
+
+
+

@@ -37,6 +37,12 @@ const router = createRouter({
     { path: '/admin/chat-history', component: () => import('../views/ChatHistory.vue') },
     { path: '/admin/products', component: () => import('../views/AdminProducts.vue') },
     { path: '/admin/orders', component: () => import('../views/AdminOrders.vue') },
+
+    // Tailwind CSS Demo
+    { path: '/tailwind-demo', component: () => import('../views/TailwindDemo.vue') },
+
+    // Enhanced Chat
+    { path: '/enhanced-chat', component: () => import('../views/EnhancedChat.vue') },
   ],
 })
 

@@ -1,3 +1,4 @@
+import './crypto-polyfill.js'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import './style.css'

@@ -1,0 +1,73 @@
+# cloudfront_config.json
+{
+  "CallerReference": "asistente-tienda-cdn",
+  "Comment": "CDN para Asistente Tienda",
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "asistente-tienda-origin",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "TrustedSigners": {
+      "Enabled": false,
+      "Quantity": 0
+    },
+    "ForwardedValues": {
+      "QueryString": false,
+      "Cookies": {
+        "Forward": "none"
+      }
+    },
+    "MinTTL": 0,
+    "DefaultTTL": 86400,
+    "MaxTTL": 31536000
+  },
+  "Origins": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "Id": "asistente-tienda-origin",
+        "DomainName": "tu-dominio.com",
+        "CustomOriginConfig": {
+          "HTTPPort": 80,
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "https-only"
+        }
+      },
+      {
+        "Id": "s3-images-origin",
+        "DomainName": "asistente-tienda-imagenes.s3.amazonaws.com",
+        "S3OriginConfig": {
+          "OriginAccessIdentity": ""
+        }
+      }
+    ]
+  },
+  "CacheBehaviors": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "PathPattern": "/images/*",
+        "TargetOriginId": "s3-images-origin",
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "ForwardedValues": {
+          "QueryString": false,
+          "Cookies": {
+            "Forward": "none"
+          }
+        },
+        "MinTTL": 0,
+        "DefaultTTL": 86400,
+        "MaxTTL": 31536000
+      }
+    ]
+  },
+  "Enabled": true,
+  "PriceClass": "PriceClass_100"
+}
+
+
+
+
+
+
+
+
+

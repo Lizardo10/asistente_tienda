@@ -44,6 +44,7 @@ from app.routers import realtime  # Actualizaciones en tiempo real
 from app.routers import cart_management  # Gestión del carrito
 from app.routers import cart_clear_improved  # Limpieza mejorada del carrito
 from app.routers import huggingface_test  # Pruebas de Hugging Face
+from app.routers import chat_enhanced  # Chat mejorado con OpenAI, audio e imágenes
 from app.routers.auth import get_current_user
 
 
@@ -78,9 +79,9 @@ async def lifespan(app: FastAPI):
 
 # Crear aplicación FastAPI
 app = FastAPI(
-    title="Asistente de Soporte — Tienda Online",
+    title="Asistente Tienda — Chat Inteligente",
     version="2.0.0",
-    description="Aplicación modernizada con Clean Architecture y principios SOLID",
+    description="Sistema de chat inteligente con OpenAI, audio e imágenes",
     lifespan=lifespan
 )
 
@@ -130,6 +131,7 @@ app.include_router(realtime.router)  # Actualizaciones en tiempo real
 app.include_router(cart_management.router)  # Gestión del carrito
 app.include_router(cart_clear_improved.router)  # Limpieza mejorada del carrito
 app.include_router(huggingface_test.router)  # Pruebas de Hugging Face
+app.include_router(chat_enhanced.router)  # Chat mejorado con OpenAI, audio e imágenes
 
 
 # WebSocket endpoint modernizado
@@ -138,57 +140,109 @@ from sqlmodel import Session
 from app.models_sqlmodel.chat import Chat, ChatMessage
 from app.use_cases.chat_use_cases import ChatUseCases
 from app.repositories.chat_repository import ChatRepository
+from app.services.rag_service import rag_service
 
-@app.websocket("/ws/support")
-async def websocket_support(websocket: WebSocket, db: Session = Depends(get_db)):
-    """WebSocket modernizado para soporte en tiempo real"""
+@app.websocket("/ws/test")
+async def websocket_test(websocket: WebSocket):
+    """WebSocket de prueba simple"""
+    print("🔌 WebSocket de prueba conectado")
     await websocket.accept()
+    print("✅ WebSocket de prueba aceptado")
     
     try:
-        # Inicializar casos de uso
-        chat_repository = ChatRepository(db)
-        chat_use_cases = ChatUseCases(chat_repository)
+        await websocket.send_text("¡Hola! WebSocket funcionando")
+        print("📤 Mensaje de prueba enviado")
         
-        # Crear chat
-        chat = await chat_use_cases.create_chat()
+        while True:
+            data = await websocket.receive_text()
+            print(f"📨 Mensaje recibido: '{data}'")
+            await websocket.send_text(f"Echo: {data}")
+            print(f"📤 Echo enviado: {data}")
+            
+    except WebSocketDisconnect:
+        print("🔌 Cliente desconectado del WebSocket de prueba")
+        return
+    except Exception as e:
+        print(f"❌ Error en WebSocket de prueba: {e}")
+        return
+
+@app.websocket("/ws/simple")
+async def websocket_simple(websocket: WebSocket):
+    """WebSocket completamente simple"""
+    print("🔌 WebSocket SIMPLE conectado")
+    await websocket.accept()
+    print("✅ WebSocket SIMPLE aceptado")
+    
+    try:
+        await websocket.send_text("¡Hola! WebSocket simple funcionando")
+        print("📤 Mensaje simple enviado")
         
+        while True:
+            data = await websocket.receive_text()
+            print(f"📨 Mensaje recibido: '{data}'")
+            await websocket.send_text(f"Echo simple: {data}")
+            print(f"📤 Echo simple enviado: {data}")
+            
+    except WebSocketDisconnect:
+        print("🔌 Cliente desconectado del WebSocket SIMPLE")
+        return
+    except Exception as e:
+        print(f"❌ Error en WebSocket SIMPLE: {e}")
+        return
+
+async def websocket_support_new(websocket: WebSocket):
+    """WebSocket completamente nuevo para soporte en tiempo real con RAG"""
+    print("🔌 WebSocket NUEVO conectado")
+    await websocket.accept()
+    print("✅ WebSocket NUEVO aceptado")
+    
+    try:
         # Enviar mensaje de bienvenida
         welcome_message = {
             "type": "chat_opened",
-            "chat_id": chat.id,
+            "chat_id": 1,
             "features": {
                 "ai_powered": True,
                 "cache_optimized": True,
                 "real_time": True,
                 "intent_analysis": True
             },
-            "message": "¡Hola! Soy tu asistente virtual mejorado. ¿En qué puedo ayudarte hoy?"
+            "message": "¡Hola! Soy tu asistente virtual de Asistente Tienda. ¿En qué puedo ayudarte hoy?"
         }
         await websocket.send_json(welcome_message)
-
+        print("📤 Mensaje de bienvenida enviado")
+        
         while True:
             data = await websocket.receive_text()
-            print(f"Mensaje recibido en WebSocket: '{data}'")
+            print(f"📨 Mensaje recibido: '{data}'")
             
             try:
-                # Procesar mensaje usando casos de uso
-                print("Iniciando procesamiento del mensaje...")
-                response = await chat_use_cases.send_message(chat.id, data)
-                print("Mensaje procesado exitosamente")
+                # Procesar mensaje usando RAG
+                print("🤖 Iniciando procesamiento RAG...")
                 
-                # Enviar respuesta optimizada
+                # Generar respuesta usando RAG
+                print("🧠 Generando respuesta RAG...")
+                rag_response = await rag_service.generate_response(data)
+                print(f"✅ Respuesta RAG: {rag_response[:100]}...")
+                
+                # Obtener recomendaciones de productos
+                print("🛍️ Obteniendo recomendaciones...")
+                recommendations = await rag_service.get_recommendations(data)
+                print(f"✅ Recomendaciones: {len(recommendations)} productos")
+                
+                # Crear respuesta estructurada
                 response_data = {
                     "type": "bot",
-                    "message": response["response"],
-                    "context": response["context"],
+                    "message": rag_response,
+                    "recommendations": recommendations,
                     "timestamp": datetime.utcnow().isoformat()
                 }
                 
                 await websocket.send_json(response_data)
-                print("Respuesta enviada al cliente")
+                print(f"📤 Respuesta enviada con {len(recommendations)} recomendaciones")
                 
             except Exception as e:
-                print(f"Error procesando mensaje en WebSocket: {e}")
+                print(f"❌ Error procesando mensaje: {e}")
                 error_response = {
                     "type": "error",
                     "message": f"Lo siento, hubo un error procesando tu consulta: {str(e)}",
@@ -197,18 +251,106 @@ async def websocket_support(websocket: WebSocket, db: Session = Depends(get_db))
                 await websocket.send_json(error_response)
             
     except WebSocketDisconnect:
-        # Cerrar chat
-        if 'chat' in locals():
-            await chat_use_cases.close_chat(chat.id)
-        print("Cliente desconectado del WebSocket")
+        print("🔌 Cliente desconectado del WebSocket NUEVO")
         return
     except Exception as e:
-        print(f"Error en WebSocket: {e}")
+        print(f"❌ Error en WebSocket NUEVO: {e}")
+        await websocket.close(code=1011, reason="Error interno del servidor")
+        return
+
+async def websocket_support(websocket: WebSocket):
+    """WebSocket simplificado para soporte en tiempo real con RAG"""
+    print("🔌 WebSocket conectado")
+    await websocket.accept()
+    print("✅ WebSocket aceptado")
+    
+    try:
+        # Enviar mensaje de bienvenida
+        welcome_message = {
+            "type": "chat_opened",
+            "chat_id": 1,
+            "features": {
+                "ai_powered": True,
+                "cache_optimized": True,
+                "real_time": True,
+                "intent_analysis": True
+            },
+            "message": "¡Hola! Soy tu asistente virtual de Asistente Tienda. ¿En qué puedo ayudarte hoy?"
+        }
+        await websocket.send_json(welcome_message)
+        print("📤 Mensaje de bienvenida enviado")
+        
+        while True:
+            data = await websocket.receive_text()
+            print(f"📨 Mensaje recibido: '{data}'")
+            
+            try:
+                # Procesar mensaje usando RAG
+                print("🤖 Iniciando procesamiento RAG...")
+                
+                # Generar respuesta usando RAG
+                print("🧠 Generando respuesta RAG...")
+                rag_response = await rag_service.generate_response(data)
+                print(f"✅ Respuesta RAG: {rag_response[:100]}...")
+                
+                # Obtener recomendaciones de productos
+                print("🛍️ Obteniendo recomendaciones...")
+                recommendations = await rag_service.get_recommendations(data)
+                print(f"✅ Recomendaciones: {len(recommendations)} productos")
+                
+                # Crear respuesta estructurada
+                response_data = {
+                    "type": "bot",
+                    "message": rag_response,
+                    "recommendations": recommendations,
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                
+                await websocket.send_json(response_data)
+                print(f"📤 Respuesta enviada con {len(recommendations)} recomendaciones")
+                
+            except Exception as e:
+                print(f"❌ Error procesando mensaje: {e}")
+                error_response = {
+                    "type": "error",
+                    "message": f"Lo siento, hubo un error procesando tu consulta: {str(e)}",
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                await websocket.send_json(error_response)
+            
+    except WebSocketDisconnect:
+        print("🔌 Cliente desconectado del WebSocket")
+        return
+    except Exception as e:
+        print(f"❌ Error en WebSocket: {e}")
         await websocket.close(code=1011, reason="Error interno del servidor")
         return
 
 
-# -- Archivos estáticos (media) --
+@app.get("/test-rag")
+async def test_rag_endpoint(query: str = "camiseta"):
+    """Endpoint de prueba para verificar el RAG"""
+    try:
+        print(f"Probando RAG con query: {query}")
+        
+        # Generar respuesta usando RAG
+        rag_response = await rag_service.generate_response(query)
+        print(f"Respuesta RAG: {rag_response}")
+        
+        # Obtener recomendaciones de productos
+        recommendations = await rag_service.get_recommendations(query)
+        print(f"Recomendaciones: {len(recommendations)}")
+        
+        return {
+            "query": query,
+            "response": rag_response,
+            "recommendations": recommendations,
+            "recommendations_count": len(recommendations)
+        }
+    except Exception as e:
+        print(f"Error en test-rag: {e}")
+        return {"error": str(e)}
+
 os.makedirs(settings.media_dir, exist_ok=True)
 app.mount("/media", StaticFiles(directory=settings.media_dir), name="media")
 
@@ -257,7 +399,7 @@ async def health():
 async def system_info():
     """Información del sistema"""
     return {
-        "name": "Asistente de Soporte — Tienda Online",
+        "name": "Asistente Tienda — Chat Inteligente",
         "version": "2.0.0",
         "architecture": "Clean Architecture + SOLID",
         "features": [

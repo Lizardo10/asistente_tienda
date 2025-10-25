@@ -34,37 +34,24 @@ class ModernAIService(IModernAIService):
     
     async def generate_smart_response(self, message: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Genera una respuesta inteligente usando tu API de OpenAI con RAG
+        Genera una respuesta inteligente usando nuestras funciones mejoradas
         """
         try:
             # Importar aquí para evitar problemas de importación circular
             from app.database.connection import get_db
-            from app.services.rag_service import advanced_rag_answer
             
-            # Obtener contexto RAG real con productos de la base de datos
+            # Obtener base de datos
             db = next(get_db())
             
-            # Convertir historial del chat al formato que espera el RAG
-            history_for_rag = []
-            if context.get("history"):
-                for hist_msg in context["history"]:
-                    # Manejar tanto objetos como diccionarios
-                    if isinstance(hist_msg, dict):
-                        history_for_rag.append({
-                            "sender": hist_msg.get("sender", "user"),
-                            "content": hist_msg.get("content", "")
-                        })
-                    else:
-                        history_for_rag.append({
-                            "sender": hist_msg.sender,
-                            "content": hist_msg.content
-                        })
+            # SIEMPRE usar nuestra función inteligente mejorada con OpenAI
+            print("🔄 Usando función inteligente mejorada de Asistente Tienda con OpenAI")
+            from app.services.openai_service import generate_smart_response
+            response = generate_smart_response(message, db)
             
-            # Usar RAG avanzado para obtener contexto real de productos
-            rag_result = advanced_rag_answer(message, db, history_for_rag)
-            
-            # Usar tu función original de OpenAI con el contexto RAG real
-            response = generate_contextual_response(message, rag_result, history_for_rag)
+            # Si la respuesta es muy corta o genérica, usar OpenAI directamente
+            if len(response) < 50 or "¿En qué puedo ayudarte hoy?" in response:
+                print("🔄 Respuesta muy genérica, usando OpenAI directamente")
+                response = await self._call_openai_directly(message, db)
             
             # Analizar intención del usuario
             intent = await self.analyze_user_intent(message)
@@ -115,11 +102,14 @@ class ModernAIService(IModernAIService):
             # Patrones para detectar consultas de productos
             product_patterns = [
                 'producto', 'productos', 'item', 'items',
-                'zapatos', 'camisas', 'pantalones', 'ropa',
-                'tienen', 'disponible', 'disponibles',
-                'muéstrame', 'muestra', 'ver', 'quiero ver',
-                'recomienda', 'recomendación', 'sugiere',
-                'comprar', 'compras', 'tienda', 'catalogo'
+                'zapatos', 'camisas', 'pantalones', 'ropa', 'vestido', 'blusa',
+                'tienen', 'disponible', 'disponibles', 'muéstrame', 'muestra', 
+                'ver', 'quiero ver', 'mostrar', 'enseñar',
+                'recomienda', 'recomendación', 'sugiere', 'sugerir',
+                'comprar', 'compras', 'tienda', 'catalogo', 'catálogo',
+                'precio', 'precios', 'costo', 'cuánto cuesta',
+                'envío', 'envíos', 'entrega', 'delivery',
+                'ayuda', 'soporte', 'horario', 'contacto'
             ]
             
             # Detectar si es una consulta de productos
@@ -151,6 +141,75 @@ class ModernAIService(IModernAIService):
                 "sentiment": "neutral",
                 "error": str(e)
             }
+    
+    async def _call_openai_directly(self, message: str, db) -> str:
+        """
+        Llama directamente a OpenAI con contexto de productos
+        """
+        try:
+            from app.services.openai_service import client
+            
+            if client is None:
+                return "Lo siento, el servicio de IA no está disponible en este momento."
+            
+            # Obtener productos de la base de datos para contexto
+            products_context = ""
+            if db:
+                try:
+                    from app.models import Product
+                    products = db.query(Product).filter(Product.active == True).limit(6).all()
+                    if products:
+                        products_context = "\n\nProductos disponibles en Asistente Tienda:\n"
+                        for i, product in enumerate(products, 1):
+                            products_context += f"{i}. {product.title} - Q{product.price:.2f} - {product.description}\n"
+                except Exception as e:
+                    print(f"Error obteniendo productos: {e}")
+            
+            # Construir mensaje del sistema
+            system_message = f"""Eres una consultora de moda experta y elegante para Asistente Tienda, una tienda online de alta calidad. 
+            Tu objetivo es ayudar a los clientes de manera sofisticada, profesional y encantadora.
+            
+            ESTILO DE COMUNICACIÓN:
+            - Tono elegante, sofisticado y amigable
+            - Usa emojis de manera sutil y profesional
+            - Lenguaje refinado pero accesible
+            - Respuestas estructuradas y visualmente atractivas
+            - Siempre menciona "Asistente Tienda" cuando sea apropiado
+            - Máximo 200 palabras por respuesta
+            
+            INFORMACIÓN DE LA TIENDA:
+            - Somos Asistente Tienda, una tienda online especializada en moda
+            - Ofrecemos productos de alta calidad con precios competitivos
+            - Tenemos envíos a domicilio y atención personalizada
+            - Nuestro horario de atención es de lunes a viernes de 9:00 a 18:00
+            - Los precios están en Quetzales (Q)
+            
+            {products_context}
+            
+            INSTRUCCIONES ESPECÍFICAS:
+            - Si preguntan por productos, menciona los disponibles y sus precios
+            - Si preguntan por envíos, explica nuestras opciones de entrega
+            - Si preguntan por horarios, menciona nuestro horario de atención
+            - Siempre ofrece ayuda adicional y menciona que pueden hacer pedidos
+            - Usa un tono profesional pero cálido
+            - Mantén las respuestas concisas pero informativas
+            - Responde siempre en español"""
+            
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": message}
+                ],
+                temperature=0.7,
+                max_tokens=400
+            )
+            
+            return response.choices[0].message.content
+            
+        except Exception as e:
+            print(f"Error llamando a OpenAI directamente: {e}")
+            return "Lo siento, hubo un error procesando tu mensaje. Por favor intenta de nuevo."
     
     async def generate_product_recommendations(self, user_preferences: Dict[str, Any]) -> List[Dict[str, Any]]:
         """

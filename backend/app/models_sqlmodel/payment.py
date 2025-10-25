@@ -133,3 +133,12 @@ class DashboardStats(SQLModel):
     orders_today: int
     orders_this_month: int
     orders_this_year: int
+
+
+
+
+
+
+
+
+

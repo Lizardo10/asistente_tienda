@@ -69,7 +69,7 @@ class ProductOut(BaseModel):
     title: str
     description: str
     price: float
-    image_url: str
+    image_url: Optional[str] = None
     active: bool
     images: List[ProductImageOut] = []   # listado de imágenes extra
     class Config:

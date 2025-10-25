@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen bg-white">
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20">
-      <div class="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5"></div>
+    <section class="relative bg-gradient-to-br from-orange-50 via-white to-green-50 py-20">
+      <div class="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-green-500/5"></div>
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
           <!-- Badge -->
@@ -14,7 +14,7 @@
           <!-- Título Principal -->
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
             Moda que
-            <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span class="bg-gradient-to-r from-orange-500 to-green-500 bg-clip-text text-transparent">
               te define
             </span>
           </h1>
@@ -29,7 +29,7 @@
           <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <router-link 
               to="/products" 
-              class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+              class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-orange-500 to-green-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
             >
               <i class="fas fa-shopping-bag mr-2"></i>
               Explorar Productos
@@ -104,7 +104,7 @@
         <div class="text-center mt-12">
           <router-link 
             to="/products" 
-            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500 to-green-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
           >
             Ver Todos los Productos
             <i class="fas fa-arrow-right ml-2"></i>
@@ -151,7 +151,7 @@
         
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6">
               <i class="fas fa-shipping-fast text-white text-2xl"></i>
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-4">Envío Gratis</h3>
@@ -171,7 +171,7 @@
           </div>
           
           <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6">
               <i class="fas fa-undo text-white text-2xl"></i>
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-4">Devoluciones</h3>
@@ -184,7 +184,7 @@
     </section>
 
     <!-- Sección IA -->
-    <section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+    <section class="py-20 bg-gradient-to-r from-orange-500 to-green-500">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div class="text-white">
           <h2 class="text-3xl sm:text-4xl font-bold mb-6">
@@ -229,7 +229,7 @@
             placeholder="Tu correo electrónico"
             class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-          <button class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+          <button class="px-8 py-3 bg-gradient-to-r from-orange-500 to-green-500 text-white font-semibold rounded-lg hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
             Suscribirse
           </button>
         </div>

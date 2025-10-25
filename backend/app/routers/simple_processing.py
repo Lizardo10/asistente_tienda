@@ -78,3 +78,12 @@ async def simple_search_image(file: UploadFile = File(...)):
         }
 
 
+
+
+
+
+
+
+
+
+

@@ -214,3 +214,12 @@ class SimpleEmailService:
 # Instancia global del servicio
 simple_email_service = SimpleEmailService()
 
+
+
+
+
+
+
+
+
+

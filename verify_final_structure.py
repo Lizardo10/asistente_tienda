@@ -146,3 +146,12 @@ if __name__ == "__main__":
     else:
         print("❌ Faltan archivos esenciales")
         print("❌ Revisar estructura antes de desplegar")
+
+
+
+
+
+
+
+
+

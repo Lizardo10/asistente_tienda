@@ -86,74 +86,91 @@ def advanced_chat_completion(
 
 def generate_smart_response(prompt: str, db=None, rag_context: str = "") -> str:
     """
-    Genera una respuesta inteligente usando la base de datos y RAG cuando OpenAI no está disponible
+    Genera una respuesta inteligente usando OpenAI con contexto de productos
+    """
+    if client is None:
+        return generate_fallback_response(prompt)
+    
+    try:
+        # Obtener productos de la base de datos para contexto
+        products_context = ""
+        if db:
+            try:
+                from ..models import Product
+                products = db.query(Product).filter(Product.active == True).limit(6).all()
+                if products:
+                    products_context = "\n\nProductos disponibles en Asistente Tienda:\n"
+                    for i, product in enumerate(products, 1):
+                        products_context += f"{i}. {product.title} - Q{product.price:.2f} - {product.description}\n"
+            except Exception as e:
+                print(f"Error obteniendo productos: {e}")
+        
+        # Construir mensaje del sistema mejorado para OpenAI
+        system_message = f"""Eres una consultora de moda experta y elegante para Asistente Tienda, una tienda online de alta calidad. 
+        Tu objetivo es ayudar a los clientes de manera sofisticada, profesional y encantadora.
+        
+        ESTILO DE COMUNICACIÓN:
+        - Tono elegante, sofisticado y amigable
+        - Usa emojis de manera sutil y profesional
+        - Lenguaje refinado pero accesible
+        - Respuestas estructuradas y visualmente atractivas
+        - Siempre menciona "Asistente Tienda" cuando sea apropiado
+        - Máximo 200 palabras por respuesta
+        
+        INFORMACIÓN DE LA TIENDA:
+        - Somos Asistente Tienda, una tienda online especializada en moda
+        - Ofrecemos productos de alta calidad con precios competitivos
+        - Tenemos envíos a domicilio y atención personalizada
+        - Nuestro horario de atención es de lunes a viernes de 9:00 a 18:00
+        - Los precios están en Quetzales (Q)
+        
+        {products_context}
+        
+        INSTRUCCIONES ESPECÍFICAS:
+        - Si preguntan por productos, menciona los disponibles y sus precios
+        - Si preguntan por envíos, explica nuestras opciones de entrega
+        - Si preguntan por horarios, menciona nuestro horario de atención
+        - Siempre ofrece ayuda adicional y menciona que pueden hacer pedidos
+        - Usa un tono profesional pero cálido
+        - Mantén las respuestas concisas pero informativas
+        - Responde siempre en español"""
+        
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=400
+        )
+        
+        return response.choices[0].message.content
+        
+    except Exception as e:
+        print(f"Error en OpenAI: {e}")
+        return generate_fallback_response(prompt)
+
+def generate_fallback_response(prompt: str) -> str:
+    """
+    Genera una respuesta de fallback cuando OpenAI no está disponible
     """
     prompt_lower = prompt.lower()
     
-    # Respuestas para saludos
+    # Respuestas básicas de fallback
     if any(word in prompt_lower for word in ['hola', 'buenos días', 'buenas tardes', 'buenas noches', 'saludos']):
-        return "¡Hola! 👋 Bienvenido a nuestra tienda online. Soy tu asistente virtual y estoy aquí para ayudarte con cualquier consulta sobre nuestros productos, precios, envíos o cualquier otra información que necesites. ¿En qué puedo asistirte hoy?"
+        return "¡Hola! 👋 Bienvenido a **Asistente Tienda**. Soy tu asistente virtual y estoy aquí para ayudarte. ¿En qué puedo asistirte hoy?"
     
-    # Respuestas sobre productos
-    if any(word in prompt_lower for word in ['productos', 'producto', 'items', 'artículos', 'qué tienen', 'catálogo']):
-        if db:
-            try:
-                from ..models import Product
-                products = db.query(Product).filter(Product.active == True).limit(5).all()
-                if products:
-                    response = "📦 Aquí tienes algunos de nuestros productos disponibles:\n\n"
-                    for product in products:
-                        response += f"• **{product.title}** - ${product.price:.2f}\n"
-                        if product.description:
-                            response += f"  _{product.description[:80]}..._\n\n"
-                    response += "¿Te interesa algún producto en particular? Puedo darte más detalles."
-                    return response
-            except Exception:
-                pass
-        return "📦 Tenemos una gran variedad de productos disponibles. ¿Hay algún tipo de producto específico que te interese? Puedo ayudarte a encontrar lo que necesitas."
+    if any(word in prompt_lower for word in ['productos', 'producto', 'items', 'artículos']):
+        return "🛍️ **Asistente Tienda** tiene una gran variedad de productos de moda disponibles. ¿Hay algún tipo de producto específico que te interese?"
     
-    # Respuestas sobre precios
-    if any(word in prompt_lower for word in ['precio', 'precios', 'costo', 'costos', 'cuánto cuesta', 'valor']):
-        if db:
-            try:
-                from ..models import Product
-                products = db.query(Product).filter(Product.active == True).all()
-                if products:
-                    min_price = min(p.price for p in products)
-                    max_price = max(p.price for p in products)
-                    return f"💰 Nuestros precios son muy competitivos. Los productos van desde ${min_price:.2f} hasta ${max_price:.2f}. ¿Hay algún producto específico del que te gustaría conocer el precio exacto?"
-            except Exception:
-                pass
-        return "💰 Nuestros precios son muy competitivos. Los productos van desde $45 hasta $200 aproximadamente. ¿Hay algún producto específico del que te gustaría conocer el precio exacto?"
+    if any(word in prompt_lower for word in ['precio', 'precios', 'costo', 'costos']):
+        return "💰 **Asistente Tienda** ofrece precios muy competitivos. ¿Hay algún producto específico del que te gustaría conocer el precio?"
     
-    # Respuestas sobre compras/pedidos
-    if any(word in prompt_lower for word in ['comprar', 'pedido', 'orden', 'cómo compro', 'cómo hago un pedido']):
-        return "🛒 ¡Excelente! Para hacer un pedido es muy fácil:\n\n1. Navega por nuestros productos\n2. Selecciona los que te interesen\n3. Agrégalos al carrito\n4. Procede al checkout\n5. Completa tus datos de envío\n\n¿Necesitas ayuda con algún paso específico?"
+    if any(word in prompt_lower for word in ['envío', 'envíos', 'entrega', 'delivery']):
+        return "🚚 **Asistente Tienda** ofrece envíos a domicilio. ¿Te gustaría saber más sobre nuestras opciones de envío?"
     
-    # Respuestas sobre envíos
-    if any(word in prompt_lower for word in ['envío', 'envíos', 'entrega', 'delivery', 'cuándo llega']):
-        return "🚚 Ofrecemos envíos a toda la ciudad. Los tiempos de entrega son:\n\n• Envío estándar: 2-3 días hábiles\n• Envío express: 1 día hábil\n• Envío gratis en compras mayores a $100\n\n¿Te gustaría saber más sobre nuestras opciones de envío?"
-    
-    # Respuestas sobre ayuda/soporte
-    if any(word in prompt_lower for word in ['ayuda', 'soporte', 'problema', 'issue', 'error']):
-        return "🆘 ¡Por supuesto! Estoy aquí para ayudarte. Puedo asistirte con:\n\n• Información sobre productos\n• Proceso de compra\n• Consultas sobre envíos\n• Resolución de problemas\n\n¿Cuál es el problema específico que necesitas resolver?"
-    
-    # Buscar productos específicos mencionados
-    if db:
-        try:
-            from ..models import Product
-            products = db.query(Product).filter(Product.active == True).all()
-            for product in products:
-                if product.title.lower() in prompt_lower:
-                    return f"👕 ¡Perfecto! Sí tenemos **{product.title}** disponible por ${product.price:.2f}. {product.description[:100]}... ¿Te interesa este producto o necesitas más información?"
-        except Exception:
-            pass
-    
-    # Usar contexto RAG si está disponible
-    if rag_context:
-        return f"🤖 Basándome en la información disponible: {rag_context[:200]}... ¿Te gustaría que profundice en algún aspecto específico?"
-    
-    # Respuesta genérica inteligente
+    # Respuesta genérica
     return f"🤖 Entiendo tu consulta sobre '{prompt[:50]}...'. Estoy aquí para ayudarte con información sobre nuestros productos, precios, envíos o cualquier otra consulta. ¿Podrías ser más específico sobre lo que necesitas?"
 
 def generate_contextual_response(
@@ -179,7 +196,7 @@ def generate_contextual_response(
     
     # Mensaje del sistema con personalidad mejorada para productos
     # Mensaje del sistema con personalidad elegante y sofisticada
-    system_message = """Eres una consultora de moda experta y elegante para una tienda online de alta calidad. 
+    system_message = """Eres una consultora de moda experta y elegante para Asistente Tienda, una tienda online de alta calidad. 
     Tu objetivo es ayudar a los clientes de manera sofisticada, profesional y encantadora.
     
     ESTILO DE COMUNICACIÓN:

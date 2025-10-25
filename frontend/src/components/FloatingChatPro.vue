@@ -599,7 +599,7 @@ onMounted(() => {
   position: relative;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff8c00 0%, #32cd32 100%);
   border: none;
   border-radius: 50%;
   color: white;
@@ -621,7 +621,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff8c00 0%, #32cd32 100%);
   animation: pulse 2s infinite;
 }
 
@@ -658,7 +658,7 @@ onMounted(() => {
 
 /* Header */
 .chat-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff8c00 0%, #32cd32 100%);
   color: white;
   padding: 20px;
   display: flex;
@@ -734,7 +734,7 @@ onMounted(() => {
 .welcome-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff8c00 0%, #32cd32 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -775,7 +775,7 @@ onMounted(() => {
 
 .quick-btn:hover {
   background: #f3f4f6;
-  border-color: #667eea;
+  border-color: #ff8c00;
 }
 
 .message-wrapper {
@@ -800,7 +800,7 @@ onMounted(() => {
 }
 
 .user-message .message-bubble {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff8c00 0%, #32cd32 100%);
   color: white;
   border-bottom-right-radius: 4px;
 }
@@ -866,7 +866,7 @@ onMounted(() => {
 
 .product-price {
   font-size: 9px;
-  color: #667eea;
+  color: #ff8c00;
   font-weight: 600;
   margin: 0;
 }
@@ -1010,13 +1010,13 @@ onMounted(() => {
 }
 
 .message-input:focus {
-  border-color: #667eea;
+  border-color: #ff8c00;
 }
 
 .send-btn {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff8c00 0%, #32cd32 100%);
   border: none;
   border-radius: 12px;
   color: white;

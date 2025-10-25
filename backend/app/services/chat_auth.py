@@ -134,3 +134,12 @@ async def authorize_chat_connection(websocket: WebSocket, db: Session) -> dict:
 
 
 
+
+
+
+
+
+
+
+
+

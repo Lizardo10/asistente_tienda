@@ -134,3 +134,12 @@ async def set_user_balance(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error actualizando saldo: {str(e)}")
+
+
+
+
+
+
+
+
+

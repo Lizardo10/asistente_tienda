@@ -174,3 +174,12 @@ async def get_active_connections():
         "active_connections": len(manager.active_connections),
         "users_connected": list(manager.active_connections.keys())
     }
+
+
+
+
+
+
+
+
+

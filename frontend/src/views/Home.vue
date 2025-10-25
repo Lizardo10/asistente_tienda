@@ -12,7 +12,7 @@
           </p>
           
           <!-- Banner del Chat -->
-          <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-8">
+          <div class="bg-gradient-to-r from-orange-50 to-green-50 rounded-2xl p-6 mb-8">
             <div class="flex flex-col sm:flex-row items-center justify-between">
               <div class="text-center sm:text-left mb-4 sm:mb-0">
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">
@@ -25,7 +25,7 @@
               </div>
               <router-link 
                 to="/chat" 
-                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300"
+                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-green-500 text-white font-semibold rounded-xl hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300"
               >
                 <i class="fas fa-comments mr-2"></i>
                 Chatear con IA
@@ -137,7 +137,7 @@
                 </div>
                 <button 
                   @click="addToCart(product)"
-                  class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300"
+                  class="w-full bg-gradient-to-r from-orange-500 to-green-500 text-white py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300"
                 >
                   <i class="fas fa-cart-plus mr-1"></i>
                   Agregar al Carrito
@@ -193,7 +193,7 @@
                 :disabled="product.stock === 0"
                 class="w-full py-2 rounded-lg font-medium transition-all duration-300"
                 :class="product.stock > 0 
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg' 
+                  ? 'bg-gradient-to-r from-orange-500 to-green-500 text-white hover:shadow-lg' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'"
               >
                 <i class="fas fa-cart-plus mr-1"></i>

@@ -7,7 +7,6 @@ from datetime import datetime
 from app.models_sqlmodel.chat import Chat, ChatMessage, ChatCreate, ChatMessageCreate
 from app.repositories.chat_repository import ChatRepository
 from app.services.ai_service import ai_service
-from app.services.rag_service import advanced_rag_answer
 from app.services.openai_service import generate_contextual_response
 from app.database.connection import get_db
 from app.services.simple_cache_service import cache_service

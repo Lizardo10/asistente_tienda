@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
       <!-- Header -->
       <div class="text-center">
-        <div class="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4">
+        <div class="mx-auto h-16 w-16 bg-gradient-to-r from-orange-500 to-green-500 rounded-full flex items-center justify-center mb-4">
           <i class="fas fa-user-plus text-white text-2xl"></i>
         </div>
         <h2 class="text-3xl font-bold text-gray-900">Crear cuenta nueva</h2>
@@ -148,7 +148,7 @@
           <button
             type="submit"
             :disabled="loading"
-            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-green-500 hover:from-orange-600 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             <span v-if="loading" class="flex items-center">
               <i class="fas fa-spinner fa-spin mr-2"></i>
@@ -291,12 +291,12 @@ async function submit() {
 }
 
 /* Efectos hover */
-.hover\:from-blue-700:hover {
-  --tw-gradient-from: #1d4ed8;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(29, 78, 216, 0));
+.hover\:from-orange-600:hover {
+  --tw-gradient-from: #ea580c;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(234, 88, 12, 0));
 }
 
-.hover\:to-purple-700:hover {
-  --tw-gradient-to: #7c3aed;
+.hover\:to-green-600:hover {
+  --tw-gradient-to: #16a34a;
 }
 </style>

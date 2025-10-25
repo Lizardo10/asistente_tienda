@@ -203,6 +203,20 @@ async def save_message(
         except (ValueError, TypeError):
             chat_id = 1  # Valor por defecto
         
+        # Verificar si el chat existe, si no, crearlo
+        from app.models_sqlmodel.chat import Chat
+        existing_chat = db.query(Chat).filter(Chat.id == chat_id).first()
+        if not existing_chat:
+            # Crear nuevo chat
+            new_chat = Chat(
+                id=chat_id,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
+            db.add(new_chat)
+            db.commit()
+            print(f"✅ Chat {chat_id} creado automáticamente")
+        
         # Crear mensaje usando la clase existente
         chat_message = ChatMessage(
             chat_id=chat_id,

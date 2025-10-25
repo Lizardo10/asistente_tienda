@@ -268,3 +268,12 @@ async def list_admins(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error listando administradores: {str(e)}")
+
+
+
+
+
+
+
+
+

@@ -5,7 +5,6 @@ from ..db import get_db
 from .. import models, schemas
 from ..security import get_current_admin
 from ..services.openai_service import ask_openai, generate_contextual_response, extract_product_recommendations
-from ..services.rag_service import rag_answer, advanced_rag_answer
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
